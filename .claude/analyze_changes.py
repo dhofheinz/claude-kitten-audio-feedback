@@ -180,7 +180,7 @@ try:
         ],
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=config.get('CLAUDE_TIMEOUT', 60),
         cwd=os.path.dirname(file_path) if file_path else None
     )
 
