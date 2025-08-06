@@ -25,6 +25,7 @@ def load_config():
         'BATCH_WAIT_TIME': '3',
         'CLAUDE_MODEL': 'sonnet',
         'CLAUDE_MAX_TURNS': '3',
+        'CLAUDE_TIMEOUT': '60',
         'AUDIO_PLAYER': 'paplay'
     }
     
@@ -94,5 +95,10 @@ def load_config():
         config['CLAUDE_MAX_TURNS'] = int(config['CLAUDE_MAX_TURNS'])
     except (ValueError, TypeError):
         config['CLAUDE_MAX_TURNS'] = 3
+    
+    try:
+        config['CLAUDE_TIMEOUT'] = int(config['CLAUDE_TIMEOUT'])
+    except (ValueError, TypeError):
+        config['CLAUDE_TIMEOUT'] = 60
     
     return config
