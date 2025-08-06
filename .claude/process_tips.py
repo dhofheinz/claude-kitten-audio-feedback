@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load configuration
 sys.path.insert(0, os.path.dirname(__file__))
 from config import load_config
+from audio_lock import AudioLock
 config = load_config()
 
 QUEUE_FILE = "/tmp/claude_code_tips_queue.json"
@@ -218,19 +219,28 @@ def process_and_speak_tips(tips):
             if audio_path:
                 audio_files[chunk_index] = audio_path
 
-    # Play audio files in order
-    for i in range(len(text_chunks)):
-        if i in audio_files:
+    # Play audio files in order with lock to prevent overlapping
+    try:
+        with AudioLock(timeout=60, wait=True):  # Wait up to 60s for current audio to finish
+            for i in range(len(text_chunks)):
+                if i in audio_files:
+                    try:
+                        # Play the audio (no timeout - let it play fully)
+                        subprocess.run(
+                            ["paplay", audio_files[i]],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL
+                        )
+                        # Clean up
+                        os.unlink(audio_files[i])
+                    except Exception:
+                        pass
+    except TimeoutError:
+        # Could not acquire lock after timeout, clean up audio files
+        for i in audio_files.values():
             try:
-                # Play the audio (no timeout - let it play fully)
-                subprocess.run(
-                    ["paplay", audio_files[i]],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL
-                )
-                # Clean up
-                os.unlink(audio_files[i])
-            except Exception:
+                os.unlink(i)
+            except:
                 pass
 
 # Main: Continuously poll for messages until one arrives

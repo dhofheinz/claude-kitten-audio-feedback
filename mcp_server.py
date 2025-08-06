@@ -19,6 +19,7 @@ import mcp.types as types
 # Add project directory to path for config
 sys.path.insert(0, str(Path(__file__).parent / ".claude"))
 from config import load_config
+from audio_lock import AudioLock
 
 # Load configuration
 config = load_config()
@@ -186,6 +187,19 @@ class KittenTTSServer:
         # Always use grizzled personality for code reviews
         return await self.speak(feedback, voice="expr-voice-2-m", personality="grizzled")
 
+    def _play_with_lock(self, player: str, audio_path: str) -> None:
+        """Play audio file with lock to prevent overlapping"""
+        try:
+            with AudioLock(timeout=60, wait=True):
+                subprocess.run(
+                    [player, audio_path],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+        except TimeoutError:
+            # Could not acquire lock, skip playback
+            pass
+    
     def _split_text(self, text: str, max_length: int = 380) -> List[str]:
         """Split text at natural boundaries"""
         if len(text) <= max_length:
@@ -298,14 +312,12 @@ sf.write(sys.argv[1], audio, sample_rate)
             await result.communicate(input=json.dumps(params).encode())
 
             if result.returncode == 0:
-                # Play audio
+                # Play audio with lock to prevent overlapping
                 player = config.get('AUDIO_PLAYER', 'paplay')
-                play_result = await asyncio.create_subprocess_exec(
-                    player, audio_path,
-                    stdout=asyncio.subprocess.DEVNULL,
-                    stderr=asyncio.subprocess.DEVNULL
-                )
-                await play_result.wait()
+                
+                # Use AudioLock in async context
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, self._play_with_lock, player, audio_path)
 
         finally:
             # Clean up temp files
