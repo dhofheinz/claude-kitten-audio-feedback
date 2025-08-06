@@ -30,6 +30,7 @@ build/
 # Logs
 *.log
 .claude/logs/
+.claude/audio-feedback/logs/
 
 # Test files
 test_*.py
@@ -53,6 +54,7 @@ Thumbs.db
 
 .claude/.cache
 .claude/commands
+.claude/audio-feedback/.cache/
 
 __pycache__/
 .pytest_cache/
