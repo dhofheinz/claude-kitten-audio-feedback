@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claude Kitten Audio Feedback - Because Your Code Deserves to be Heard</title>
     <meta name="description" content="Real-time audio feedback for Claude Code. Written by someone who actually ships code.">
-    
+
     <!-- Critical CSS inlined because CDNs go down -->
-    
+
     <style>
         :root {
             --color-canvas-default: #0d1117;
@@ -317,7 +317,7 @@
             .hero h1 {
                 font-size: 36px;
             }
-            
+
             .hero .subtitle {
                 font-size: 18px;
             }
@@ -363,8 +363,8 @@
             <div class="container">
                 <h1>Your Code Deserves to be Heard</h1>
                 <p class="subtitle">Real-time audio feedback that actually works. No BS.</p>
-                <p class="author">— Linus, shipping code from the basement since 1991</p>
-                
+                <p class="author">— Daniel</p>
+
                 <div class="buttons">
                     <a href="#" class="btn btn-primary github-link">
                         <span>⭐</span>
@@ -398,38 +398,38 @@
                     No cloud services, no subscriptions, no tracking. Just a 15MB model
                     running locally that tells you when your code sucks.
                 </p>
-                
+
                 <div class="feature-grid">
                     <div class="feature-card">
                         <div class="feature-icon">🎯</div>
                         <h3>Real-time Analysis</h3>
                         <p>Hooks into your file saves. Reviews diffs instantly. No waiting for CI/CD pipelines to tell you what you already know.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">🔊</div>
                         <h3>Actual Audio</h3>
                         <p>Not some robotic TTS garbage. KittenTTS sounds like a real engineer who's seen some shit.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">🧠</div>
                         <h3>Smart Batching</h3>
                         <p>Won't spam you with audio every keystroke. Groups feedback intelligently because interruptions kill flow.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">🛠️</div>
                         <h3>Local First</h3>
                         <p>Runs on your machine. Your code stays on your machine. Novel concept in 2024, I know.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
                         <h3>Actually Fast</h3>
                         <p>15M parameter model. Not 70B. Because waiting for feedback is worse than no feedback.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <div class="feature-icon">🎮</div>
                         <h3>MCP Protocol</h3>
@@ -473,7 +473,7 @@ PulseAudio      # For sound on Linux/WSL2
                 </div>
 
                 <div class="warning">
-                    <strong>⚠️ Heads up:</strong> This will make sounds. If you're in an open office, 
+                    <strong>⚠️ Heads up:</strong> This will make sounds. If you're in an open office,
                     use headphones or prepare for questions about "who's that grumpy voice?"
                 </div>
             </div>
@@ -482,7 +482,7 @@ PulseAudio      # For sound on Linux/WSL2
         <section class="section" id="features">
             <div class="container">
                 <h2>Why This Doesn't Suck</h2>
-                
+
                 <h3>The Grizzled Engineer Personality</h3>
                 <p>
                     Default voice is a 10x engineer who's been writing code since punch cards.
@@ -526,7 +526,7 @@ ENABLE_TEXT_FEEDBACK=false
             <div class="container">
                 <h2>Configuration (For Power Users)</h2>
                 <p>
-                    Everything's in <code>.env</code>. No XML. No YAML. No TOML. 
+                    Everything's in <code>.env</code>. No XML. No YAML. No TOML.
                     Just key=value like nature intended.
                 </p>
 
@@ -569,24 +569,24 @@ AUDIO_PLAYER=ffplay  <span class="comment"># When nothing else works</span></pre
         <section class="section">
             <div class="container">
                 <h2>The Technical Stuff (If You Care)</h2>
-                
+
                 <h3>Architecture That Makes Sense</h3>
                 <p>
-                    PostToolUse hooks → Claude analysis → Queue tips → Background processor → 
-                    Parallel audio generation → Your ears. No microservices. No message buses. 
+                    PostToolUse hooks → Claude analysis → Queue tips → Background processor →
+                    Parallel audio generation → Your ears. No microservices. No message buses.
                     Just Unix processes doing one thing well.
                 </p>
 
                 <h3>Security (Because 2024)</h3>
                 <p>
-                    JSON via stdin, not command args. File locks prevent races. 
+                    JSON via stdin, not command args. File locks prevent races.
                     Subprocess isolation. No eval(). No string interpolation in commands.
                     The basics that everyone should do but doesn't.
                 </p>
 
                 <h3>Performance</h3>
                 <p>
-                    15M parameters = ~60MB RAM. Generation in ~200ms. Adaptive polling 
+                    15M parameters = ~60MB RAM. Generation in ~200ms. Adaptive polling
                     (100ms → 500ms → 1s) to save CPU. ThreadPoolExecutor for parallel chunks.
                     It's not rocket science, just competent engineering.
                 </p>
@@ -601,7 +601,7 @@ AUDIO_PLAYER=ffplay  <span class="comment"># When nothing else works</span></pre
                     Not interested in your "architectural suggestions" unless they
                     come with working code.
                 </p>
-                
+
                 <div class="warning">
                     <strong>PR Rules:</strong><br>
                     1. It has to work<br>
@@ -618,8 +618,8 @@ AUDIO_PLAYER=ffplay  <span class="comment"># When nothing else works</span></pre
         <div class="container">
             <p>
                 Built with frustration and coffee by someone who just wanted audio feedback that doesn't suck.<br>
-                <a href="#" class="github-link">GitHub</a> • 
-                <a href="#" class="issues-link">Issues</a> • 
+                <a href="#" class="github-link">GitHub</a> •
+                <a href="#" class="issues-link">Issues</a> •
                 MIT License (because GPL is complicated)
             </p>
             <p style="margin-top: 16px; font-size: 12px;">
@@ -648,26 +648,26 @@ AUDIO_PLAYER=ffplay  <span class="comment"># When nothing else works</span></pre
             "That TODO from 2019 isn't getting done, kid.",
             "Memory leaks are just deferred crashes.",
         ];
-        console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+        console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`,
                    'color: #3fb950; font-size: 14px; font-style: italic;');
-        
+
         // Update all repo URLs dynamically
         document.addEventListener('DOMContentLoaded', () => {
             // Update GitHub links
             document.querySelectorAll('.github-link').forEach(link => {
                 link.href = REPO_CONFIG.url;
             });
-            
+
             // Update issues link
             document.querySelectorAll('.issues-link').forEach(link => {
                 link.href = `${REPO_CONFIG.url}/issues`;
             });
-            
+
             // Update repo URLs in code blocks
             document.querySelectorAll('.repo-url').forEach(elem => {
                 elem.textContent = REPO_CONFIG.url;
             });
-            
+
             // Update repo name references
             document.querySelectorAll('.repo-name').forEach(elem => {
                 elem.textContent = REPO_CONFIG.repo;
