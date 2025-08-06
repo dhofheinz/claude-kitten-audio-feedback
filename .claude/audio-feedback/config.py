@@ -14,7 +14,7 @@ def load_config():
     # Default values
     defaults = {
         'ENABLE_LOGGING': 'false',
-        'LOG_DIR': '.claude/logs',
+        'LOG_DIR': '.claude/audio-feedback/logs',
         'MAX_LOG_SIZE': '5242880',  # 5MB in bytes
         'LOG_BACKUP_COUNT': '3',     # Keep 3 old log files
         'ENABLE_AUDIO_FEEDBACK': 'true',
