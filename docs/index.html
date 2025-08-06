@@ -382,9 +382,9 @@
                         <div class="terminal-dot dot-yellow"></div>
                         <div class="terminal-dot dot-green"></div>
                     </div>
-                    <pre><span class="comment"># One-liner install because life's too short</span>
+                    <pre><span class="comment"># Two commands because doing it right matters</span>
 <span class="command">$</span> git clone <span class="repo-url"></span>
-<span class="command">$</span> cd <span class="repo-name"></span> && ./setup_mcp.sh
+<span class="command">$</span> cd <span class="repo-name"></span> && ./setup.sh
 <span class="command">$</span> <span class="pulse">_</span></pre>
                 </div>
             </div>
@@ -455,21 +455,34 @@ PulseAudio      # For sound on Linux/WSL2
 ~500MB disk     # For the model that actually works</pre>
                 </div>
 
-                <h3>2. Clone and Run (Like It's 2005)</h3>
+                <h3>2. Clone and Setup (Actually Works)</h3>
                 <div class="code-block">
                     <pre><span class="command">git clone</span> <span class="repo-url"></span>
 <span class="command">cd</span> <span class="repo-name"></span>
-<span class="command">./setup_mcp.sh</span>  <span class="comment"># This actually sets everything up</span></pre>
+<span class="command">./setup.sh</span>      <span class="comment"># Installs everything: venv, KittenTTS, MCP, the works</span>
+<span class="command">./test_audio.sh</span> <span class="comment"># Make sure you can hear the grizzled engineer</span></pre>
                 </div>
 
-                <h3>3. Configure Your Hooks</h3>
+                <h3>3. Enable Claude Integration</h3>
                 <div class="code-block">
-                    <pre><span class="comment"># Copy the example settings</span>
-<span class="command">cp</span> .claude/settings.json.example .claude/settings.local.json
+                    <pre><span class="comment"># For MCP (Claude speaks directly to you)</span>
+<span class="command">./setup_mcp.sh</span>  <span class="comment"># Shows you the exact command to run</span>
 
-<span class="comment"># Edit .env if you want different voices or whatever</span>
-<span class="command">cp</span> .env.example .env
-<span class="command">vim</span> .env  <span class="comment"># Yes, vim. Deal with it.</span></pre>
+<span class="comment"># For hooks (audio on every file save)</span>
+<span class="command">cp</span> .claude/settings.json.example .claude/settings.local.json
+<span class="command">claude config set</span> postToolUse /path/to/your/repo/.claude/review_code.py</pre>
+                </div>
+
+                <h3>4. Customize (Optional)</h3>
+                <div class="code-block">
+                    <pre><span class="comment"># Edit .env if you want different voices or toggles</span>
+<span class="command">cp</span> .env.example .env  <span class="comment"># (setup.sh does this for you)</span>
+<span class="command">vim</span> .env  <span class="comment"># Yes, vim. Deal with it.</span>
+
+<span class="comment"># Key settings:</span>
+ENABLE_AUDIO_FEEDBACK=true  <span class="comment"># Turn off when presenting</span>
+ENABLE_TEXT_FEEDBACK=true   <span class="comment"># Turn off for silent mode</span>
+TTS_VOICE=expr-voice-2-m    <span class="comment"># The grizzled engineer</span></pre>
                 </div>
 
                 <div class="warning">
