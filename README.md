@@ -22,9 +22,22 @@ An intelligent audio feedback system that enhances Claude Code with real-time vo
 
 ## Quick Start
 
-See [GETTING_STARTED.md](GETTING_STARTED.md) for installation and setup instructions.
+```bash
+# Clone and setup
+git clone https://github.com/dhofheinz/claude-kitten-audio-feedback
+cd claude-kitten-audio-feedback
+./setup.sh         # Installs everything automatically
 
-For MCP integration (allowing Claude to speak directly), see [MCP_SETUP.md](MCP_SETUP.md).
+# Test the audio
+./test_audio.sh    # You should hear the grizzled engineer
+
+# Enable MCP (for Claude to speak directly)
+./setup_mcp.sh     # Shows the command to add to Claude Code
+```
+
+See [GETTING_STARTED.md](GETTING_STARTED.md) for detailed instructions.
+
+For MCP integration details, see [MCP_SETUP.md](MCP_SETUP.md).
 
 ## Requirements
 
@@ -53,6 +66,10 @@ Edit `.env` to customize:
 ├── settings.json.example    # Example hook configuration
 └── settings.local.json      # Your hook configuration
 
+setup.sh                     # Automated setup script
+test_audio.sh                # Audio test utility
+setup_mcp.sh                 # MCP configuration helper
+requirements.txt             # Python dependencies
 .env.example                 # Configuration template
 mcp_server.py                # MCP server for Claude integration
 claude_desktop_config.json   # Example config for Claude Desktop

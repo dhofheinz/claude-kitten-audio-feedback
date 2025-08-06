@@ -13,29 +13,53 @@ This guide will help you set up the KittenTTS audio feedback system for Claude C
 
 ## Installation
 
-### 1. Clone the Repository
+### Automatic Setup (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/kitten-audio-feedback.git
-cd kitten-audio-feedback
+git clone https://github.com/dhofheinz/claude-kitten-audio-feedback.git
+cd claude-kitten-audio-feedback
+./setup.sh  # Does everything for you
 ```
 
-### 2. Create Virtual Environment
+This script will:
+- Check Python version (3.8+ required)
+- Create virtual environment
+- Install all dependencies (KittenTTS, MCP, etc.)
+- Set up configuration files
+- Create necessary directories
+
+### Manual Setup
+
+If you prefer to set things up manually:
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/dhofheinz/claude-kitten-audio-feedback.git
+cd claude-kitten-audio-feedback
+```
+
+#### 2. Create Virtual Environment
 
 ```bash
 python3 -m venv tts_venv
 source tts_venv/bin/activate  # On Windows: tts_venv\Scripts\activate
 ```
 
-### 3. Install KittenTTS
+#### 3. Install Dependencies
 
 ```bash
-pip install kittentts
+pip install -r requirements.txt
+```
+
+Or install manually:
+```bash
+pip install kittentts soundfile numpy mcp python-dotenv
 ```
 
 The first run will automatically download the TTS model (~500MB).
 
-### 4. Configure Environment
+#### 4. Configure Environment
 
 ```bash
 cp .env.example .env
@@ -83,6 +107,11 @@ Or if you have existing settings, add the hooks manually:
 
 ### 1. Test TTS Audio
 
+```bash
+./test_audio.sh  # Automated test script
+```
+
+Or manually:
 ```bash
 python3 -c "from kittentts import KittenTTS; m = KittenTTS('KittenML/kitten-tts-nano-0.1'); import soundfile as sf; audio = m.generate('Hello, audio feedback is working!', voice='expr-voice-2-m'); sf.write('/tmp/test.wav', audio, 24000)"
 paplay /tmp/test.wav
