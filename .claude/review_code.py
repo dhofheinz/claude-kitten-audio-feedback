@@ -29,16 +29,8 @@ def main():
     analyzer_path = Path(__file__).parent / "analyze_changes.py"
     result = subprocess.run(
         [sys.executable, str(analyzer_path)],
-        stdin=sys.stdin,  # Pass stdin from hook
-        capture_output=True,
-        text=True
+        stdin=sys.stdin  # Pass stdin from hook, let stdout/stderr pass through directly
     )
-    
-    # Pass through stdout and stderr
-    if result.stdout:
-        print(result.stdout, end='')
-    if result.stderr:
-        print(result.stderr, end='', file=sys.stderr)
     
     # Exit with the same code as the analyzer
     sys.exit(result.returncode)
