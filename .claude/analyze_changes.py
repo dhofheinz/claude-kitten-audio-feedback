@@ -239,8 +239,10 @@ try:
             if config.get('ENABLE_TEXT_FEEDBACK', True):
                 print(f"💡 Code review tip: {response}", file=sys.stderr)
                 sys.exit(2)
-            elif ENABLE_LOGGING and logger:
-                log_message("Decision: Text feedback disabled, not returning to Claude", logger)
+            else:
+                if ENABLE_LOGGING and logger:
+                    log_message("Decision: Text feedback disabled, not returning to Claude", logger)
+                sys.exit(0)  # Exit cleanly without feedback
         else:
             if ENABLE_LOGGING and logger:
                 log_message("Decision: GOOD code, no tip needed", logger)
