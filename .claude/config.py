@@ -23,6 +23,7 @@ def load_config():
         'TTS_VOICE': 'expr-voice-2-m',
         'TTS_SAMPLE_RATE': '24000',
         'BATCH_WAIT_TIME': '3',
+        'PROCESSOR_IDLE_TIMEOUT': '30',  # Seconds before idle processor exits
         'CLAUDE_MODEL': 'sonnet',
         'CLAUDE_MAX_TURNS': '3',
         'CLAUDE_TIMEOUT': '60',
@@ -100,5 +101,10 @@ def load_config():
         config['CLAUDE_TIMEOUT'] = int(config['CLAUDE_TIMEOUT'])
     except (ValueError, TypeError):
         config['CLAUDE_TIMEOUT'] = 60
+    
+    try:
+        config['PROCESSOR_IDLE_TIMEOUT'] = int(config['PROCESSOR_IDLE_TIMEOUT'])
+    except (ValueError, TypeError):
+        config['PROCESSOR_IDLE_TIMEOUT'] = 30
     
     return config

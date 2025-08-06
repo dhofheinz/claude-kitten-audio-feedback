@@ -300,10 +300,15 @@ def _call_claude(prompt: str, cwd: Optional[str], logger: Optional[logging.Logge
         "--max-turns",
         str(CLAUDE_MAX_TURNS),
     ]
+    
+    # Optionally add verbose flag for debugging
+    if config.get("CLAUDE_VERBOSE", False):
+        args.append("--verbose")
     try:
         result = subprocess.run(  # noqa: S603
             args,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=None,  # Inherit stderr directly from parent process
             text=True,
             timeout=CLAUDE_TIMEOUT,
             cwd=cwd,
@@ -323,9 +328,9 @@ def _call_claude(prompt: str, cwd: Optional[str], logger: Optional[logging.Logge
         log_message("=== CLAUDE'S RAW RESPONSE ===", logger)
         log_message(f"Return code: {result.returncode}", logger)
         log_message(f"Stdout: {result.stdout if result.stdout else '(empty)'}", logger)
-        log_message(f"Stderr: {result.stderr if result.stderr else '(empty)'}", logger)
+        # Note: stderr now goes directly to parent process stderr
 
-    return result.returncode, result.stdout or "", result.stderr or ""
+    return result.returncode, result.stdout or "", ""  # Empty string for stderr since we don't capture it
 
 
 def analyze_code_change(input_data: Dict[str, Any], logger: Optional[logging.Logger] = None) -> Tuple[Optional[str], Optional[bool]]:
