@@ -1,0 +1,15 @@
+# Core TTS dependencies
+kittentts>=0.1.0
+soundfile>=0.12.0
+numpy>=1.21.0
+
+# MCP (Model Context Protocol) for Claude integration
+mcp>=0.1.0
+
+# Configuration management
+python-dotenv>=1.0.0
+
+# Optional: For development and testing
+# pytest>=7.0.0
+# black>=23.0.0
+# ruff>=0.1.0
