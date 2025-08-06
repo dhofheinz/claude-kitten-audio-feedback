@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "kitten-tts": {
+      "command": "/path/to/kitten/tts_venv/bin/python",
+      "args": ["/path/to/kitten/mcp_server.py"],
+      "env": {
+        "CLAUDE_PROJECT_DIR": "/path/to/kitten"
+      }
+    }
+  }
+}

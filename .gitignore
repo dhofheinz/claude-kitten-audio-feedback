@@ -1,0 +1,52 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+tts_venv/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Audio files
+*.wav
+*.mp3
+*.ogg
+
+# Logs
+*.log
+.claude/logs/
+
+# Test files
+test_*.py
+rapid_test*.py
+
+# Temporary files
+*.tmp
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+/test_batch.py
+/test_batch2.py
+/test_bad_code.py
+/test_new_venv.py
+/test_audio_playback.py
+/use_voice_2m.py
