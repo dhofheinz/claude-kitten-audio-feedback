@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Kitten Audio Feedback - Because Your Code Deserves to be Heard</title>
+    <meta name="description" content="Real-time audio feedback for Claude Code. Written by someone who actually ships code.">
+    
+    <!-- Critical CSS inlined because CDNs go down -->
+    
+    <style>
+        :root {
+            --color-canvas-default: #0d1117;
+            --color-canvas-subtle: #161b22;
+            --color-canvas-inset: #010409;
+            --color-fg-default: #c9d1d9;
+            --color-fg-muted: #8b949e;
+            --color-fg-subtle: #484f58;
+            --color-border-default: #30363d;
+            --color-border-muted: #21262d;
+            --color-accent-fg: #58a6ff;
+            --color-success-fg: #3fb950;
+            --color-danger-fg: #f85149;
+            --color-warning-fg: #d29922;
+            --terminal-green: #3fb950;
+            --terminal-yellow: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+            line-height: 1.5;
+            color: var(--color-fg-default);
+            background: var(--color-canvas-default);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            background: var(--color-canvas-subtle);
+            border-bottom: 1px solid var(--color-border-default);
+            padding: 24px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(22, 27, 34, 0.9);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-fg-default);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo:hover {
+            color: var(--color-accent-fg);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--color-fg-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-accent-fg);
+        }
+
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-default);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--color-accent-fg), var(--terminal-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 20px;
+            color: var(--color-fg-muted);
+            margin-bottom: 32px;
+        }
+
+        .hero .author {
+            font-size: 14px;
+            color: var(--color-fg-subtle);
+            font-style: italic;
+            margin-bottom: 48px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--color-accent-fg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4c94e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-fg-default);
+            border-color: var(--color-border-default);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-accent-fg);
+            color: var(--color-accent-fg);
+        }
+
+        .terminal {
+            background: var(--color-canvas-inset);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 16px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+            font-size: 14px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #28ca42; }
+
+        .command {
+            color: var(--terminal-green);
+        }
+
+        .comment {
+            color: var(--color-fg-subtle);
+        }
+
+        .section {
+            padding: 64px 0;
+            border-bottom: 1px solid var(--color-border-default);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--color-fg-default);
+        }
+
+        .section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 24px 0 16px;
+            color: var(--color-fg-default);
+        }
+
+        .section p {
+            color: var(--color-fg-muted);
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: var(--color-canvas-subtle);
+            border: 1px solid var(--color-border-default);
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-accent-fg);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-accent-fg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .feature-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .code-block {
+            background: var(--color-canvas-inset);
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: var(--color-fg-default);
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: rgba(212, 153, 34, 0.1);
+            border: 1px solid var(--color-warning-fg);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 24px 0;
+            color: var(--color-warning-fg);
+        }
+
+        .footer {
+            padding: 48px 0;
+            text-align: center;
+            color: var(--color-fg-subtle);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--color-accent-fg);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <script src="config.js"></script>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <span>🔊</span>
+                    <span>Claude Kitten Audio</span>
+                </a>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#install">Install</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#config">Config</a></li>
+                        <li><a href="#" class="github-link">GitHub</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Your Code Deserves to be Heard</h1>
+                <p class="subtitle">Real-time audio feedback that actually works. No BS.</p>
+                <p class="author">— Linus, shipping code from the basement since 1991</p>
+                
+                <div class="buttons">
+                    <a href="#" class="btn btn-primary github-link">
+                        <span>⭐</span>
+                        <span>Star on GitHub</span>
+                    </a>
+                    <a href="#install" class="btn btn-secondary">
+                        <span>📦</span>
+                        <span>Quick Install</span>
+                    </a>
+                </div>
+
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                    </div>
+                    <pre><span class="comment"># One-liner install because life's too short</span>
+<span class="command">$</span> git clone <span class="repo-url"></span>
+<span class="command">$</span> cd <span class="repo-name"></span> && ./setup_mcp.sh
+<span class="command">$</span> <span class="pulse">_</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Look, Here's What This Actually Does</h2>
+                <p>
+                    You write code. Claude reviews it. You hear the feedback. That's it.
+                    No cloud services, no subscriptions, no tracking. Just a 15MB model
+                    running locally that tells you when your code sucks.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Real-time Analysis</h3>
+                        <p>Hooks into your file saves. Reviews diffs instantly. No waiting for CI/CD pipelines to tell you what you already know.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔊</div>
+                        <h3>Actual Audio</h3>
+                        <p>Not some robotic TTS garbage. KittenTTS sounds like a real engineer who's seen some shit.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3>Smart Batching</h3>
+                        <p>Won't spam you with audio every keystroke. Groups feedback intelligently because interruptions kill flow.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🛠️</div>
+                        <h3>Local First</h3>
+                        <p>Runs on your machine. Your code stays on your machine. Novel concept in 2024, I know.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Actually Fast</h3>
+                        <p>15M parameter model. Not 70B. Because waiting for feedback is worse than no feedback.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎮</div>
+                        <h3>MCP Protocol</h3>
+                        <p>Claude can speak directly to you. Like pair programming but your partner doesn't eat your lunch.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="install">
+            <div class="container">
+                <h2>Installation (The Real Instructions)</h2>
+                <p>
+                    Stop reading Medium articles about "10x engineers" and actually ship something.
+                    Here's how you get this working in 2 minutes:
+                </p>
+
+                <h3>1. Prerequisites (You Probably Have These)</h3>
+                <div class="code-block">
+                    <pre>Python 3.8+     # If you don't have this, what are you even doing?
+Claude Code CLI # The actual Claude, not some knockoff
+PulseAudio      # For sound on Linux/WSL2
+~500MB disk     # For the model that actually works</pre>
+                </div>
+
+                <h3>2. Clone and Run (Like It's 2005)</h3>
+                <div class="code-block">
+                    <pre><span class="command">git clone</span> <span class="repo-url"></span>
+<span class="command">cd</span> <span class="repo-name"></span>
+<span class="command">./setup_mcp.sh</span>  <span class="comment"># This actually sets everything up</span></pre>
+                </div>
+
+                <h3>3. Configure Your Hooks</h3>
+                <div class="code-block">
+                    <pre><span class="comment"># Copy the example settings</span>
+<span class="command">cp</span> .claude/settings.json.example .claude/settings.local.json
+
+<span class="comment"># Edit .env if you want different voices or whatever</span>
+<span class="command">cp</span> .env.example .env
+<span class="command">vim</span> .env  <span class="comment"># Yes, vim. Deal with it.</span></pre>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Heads up:</strong> This will make sounds. If you're in an open office, 
+                    use headphones or prepare for questions about "who's that grumpy voice?"
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <div class="container">
+                <h2>Why This Doesn't Suck</h2>
+                
+                <h3>The Grizzled Engineer Personality</h3>
+                <p>
+                    Default voice is a 10x engineer who's been writing code since punch cards.
+                    Not condescending, just... experienced. Will tell you about that SQL injection
+                    vulnerability before it ruins your weekend.
+                </p>
+
+                <div class="code-block">
+                    <pre><span class="comment"># What you'll hear:</span>
+"Kid, that variable name will haunt you at 3am"
+"Seen this pattern before. Doesn't end well."
+"That'll work... until production load hits"</pre>
+                </div>
+
+                <h3>Smart Text Splitting</h3>
+                <p>
+                    KittenTTS has a ~400 char limit? No problem. We split at natural boundaries.
+                    Commas, conjunctions, sentences. Not mid-word like some amateur hour solution.
+                </p>
+
+                <h3>Rotating Logs (Because Disk Space Matters)</h3>
+                <p>
+                    Logs rotate at 5MB. Keeps last 3. Configurable because one size doesn't fit all.
+                    Your 2TB NVMe doesn't care, but that EC2 instance might.
+                </p>
+
+                <h3>Kill Switches That Work</h3>
+                <div class="code-block">
+                    <pre><span class="comment"># Turn off audio when presenting</span>
+ENABLE_AUDIO_FEEDBACK=false
+
+<span class="comment"># Turn off text feedback when you just want silence</span>
+ENABLE_TEXT_FEEDBACK=false
+
+<span class="comment"># Because sometimes you need peace</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="config">
+            <div class="container">
+                <h2>Configuration (For Power Users)</h2>
+                <p>
+                    Everything's in <code>.env</code>. No XML. No YAML. No TOML. 
+                    Just key=value like nature intended.
+                </p>
+
+                <h3>The Important Bits</h3>
+                <div class="code-block">
+                    <pre><span class="comment"># Choose your personality</span>
+TTS_VOICE=expr-voice-2-m  <span class="comment"># The grizzled one</span>
+TTS_VOICE=expr-voice-3-f  <span class="comment"># Cheerful (why?)</span>
+TTS_VOICE=expr-voice-4-m  <span class="comment"># Serious</span>
+
+<span class="comment"># Batching (milliseconds)</span>
+BATCH_WAIT_TIME=3  <span class="comment"># Wait 3s for more changes</span>
+
+<span class="comment"># Model selection</span>
+TTS_MODEL=KittenML/kitten-tts-nano-0.1  <span class="comment"># Fast and good</span>
+
+<span class="comment"># Audio player</span>
+AUDIO_PLAYER=paplay  <span class="comment"># PulseAudio (Linux/WSL2)</span>
+AUDIO_PLAYER=afplay  <span class="comment"># macOS</span>
+AUDIO_PLAYER=ffplay  <span class="comment"># When nothing else works</span></pre>
+                </div>
+
+                <h3>MCP Integration</h3>
+                <p>
+                    Want Claude to speak directly? Add this to your Claude Desktop config:
+                </p>
+                <div class="code-block">
+                    <pre>{
+  "mcpServers": {
+    "kitten-tts": {
+      "command": "python",
+      "args": ["/path/to/mcp_server.py"]
+    }
+  }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>The Technical Stuff (If You Care)</h2>
+                
+                <h3>Architecture That Makes Sense</h3>
+                <p>
+                    PostToolUse hooks → Claude analysis → Queue tips → Background processor → 
+                    Parallel audio generation → Your ears. No microservices. No message buses. 
+                    Just Unix processes doing one thing well.
+                </p>
+
+                <h3>Security (Because 2024)</h3>
+                <p>
+                    JSON via stdin, not command args. File locks prevent races. 
+                    Subprocess isolation. No eval(). No string interpolation in commands.
+                    The basics that everyone should do but doesn't.
+                </p>
+
+                <h3>Performance</h3>
+                <p>
+                    15M parameters = ~60MB RAM. Generation in ~200ms. Adaptive polling 
+                    (100ms → 500ms → 1s) to save CPU. ThreadPoolExecutor for parallel chunks.
+                    It's not rocket science, just competent engineering.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Contributing (Or Don't)</h2>
+                <p>
+                    This works. If it doesn't work for you, fix it and send a PR.
+                    Not interested in your "architectural suggestions" unless they
+                    come with working code.
+                </p>
+                
+                <div class="warning">
+                    <strong>PR Rules:</strong><br>
+                    1. It has to work<br>
+                    2. It can't make things slower<br>
+                    3. No dependencies on cloud services<br>
+                    4. No telemetry, analytics, or phone-home BS<br>
+                    5. If it needs 47 config files, it's wrong
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Built with frustration and coffee by someone who just wanted audio feedback that doesn't suck.<br>
+                <a href="#" class="github-link">GitHub</a> • 
+                <a href="#" class="issues-link">Issues</a> • 
+                MIT License (because GPL is complicated)
+            </p>
+            <p style="margin-top: 16px; font-size: 12px;">
+                "Talk is cheap. Show me the code." — Actual Linus, not this page's author
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add random grizzled quotes to console
+        const quotes = [
+            "Your code is a reflection of your mind. Clean up both.",
+            "I've seen spaghetti code. This is lasagna code - layered mess.",
+            "Comments are for why, not what. I can read code.",
+            "That TODO from 2019 isn't getting done, kid.",
+            "Memory leaks are just deferred crashes.",
+        ];
+        console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                   'color: #3fb950; font-size: 14px; font-style: italic;');
+        
+        // Update all repo URLs dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update GitHub links
+            document.querySelectorAll('.github-link').forEach(link => {
+                link.href = REPO_CONFIG.url;
+            });
+            
+            // Update issues link
+            document.querySelectorAll('.issues-link').forEach(link => {
+                link.href = `${REPO_CONFIG.url}/issues`;
+            });
+            
+            // Update repo URLs in code blocks
+            document.querySelectorAll('.repo-url').forEach(elem => {
+                elem.textContent = REPO_CONFIG.url;
+            });
+            
+            // Update repo name references
+            document.querySelectorAll('.repo-name').forEach(elem => {
+                elem.textContent = REPO_CONFIG.repo;
+            });
+        });
+    </script>
+</body>
+</html>
