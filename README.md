@@ -83,7 +83,7 @@ MIT
 
 This project uses the following open source libraries:
 
-- **[KittenTTS](https://github.com/KittenML/kitten-tts)** - Ultra-lightweight 15M parameter TTS model for fast, high-quality speech synthesis
+- **[KittenTTS](https://github.com/KittenML/KittenTTS)** - Ultra-lightweight 15M parameter TTS model for fast, high-quality speech synthesis
 - **[MCP (Model Context Protocol)](https://github.com/modelcontextprotocol/python-sdk)** - Protocol for Claude integrations and tool interactions
 - **[Claude Code CLI](https://github.com/anthropics/claude-code)** - Official CLI for Claude by Anthropic
 
