@@ -16,9 +16,10 @@ An intelligent audio feedback system that enhances Claude Code with real-time vo
 
 1. **File Edit Detection**: Hooks monitor code changes in real-time
 2. **AI Analysis**: Claude analyzes diffs using non-interactive mode
-3. **Smart Queuing**: Tips are batched to avoid overwhelming audio
-4. **TTS Generation**: KittenTTS converts feedback to natural speech
-5. **Seamless Playback**: Audio plays while you continue coding
+3. **Dual Feedback**: Provides immediate text feedback to Claude Code and queues audio
+4. **Smart Batching**: Audio tips are intelligently grouped to avoid overwhelming playback
+5. **TTS Generation**: KittenTTS converts feedback to natural speech
+6. **Seamless Playback**: Audio plays in background while you continue coding
 
 ## Quick Start
 
@@ -58,13 +59,12 @@ Edit `.env` to customize:
 
 ```
 .claude/
-├── analyze_changes.py       # Code analysis hook
-├── announce_task.py         # Task completion announcer
-├── process_tips.py          # Background audio processor
-├── review_code.py           # Unified review handler
+├── review.py                # Unified code review handler with AI analysis
+├── process.py               # Singleton audio processor for TTS playback
+├── audio_lock.py            # Prevents overlapping audio playback
 ├── config.py                # Configuration loader
 ├── settings.json.example    # Example hook configuration
-└── settings.local.json      # Your hook configuration
+└── settings.local.json      # Your local hook configuration
 
 setup.sh                     # Automated setup script
 test_audio.sh                # Audio test utility

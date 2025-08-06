@@ -50,3 +50,9 @@ Thumbs.db
 /test_new_venv.py
 /test_audio_playback.py
 /use_voice_2m.py
+
+.claude/.cache
+.claude/commands
+
+__pycache__/
+.pytest_cache/

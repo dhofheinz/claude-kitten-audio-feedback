@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Background processor for tips queue with parallel audio generation"""
+"""Singleton background processor for tips queue with continuous monitoring"""
 import json
 import os
 import sys
@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 import time
 import fcntl
+import signal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Load configuration
@@ -18,7 +19,21 @@ config = load_config()
 
 QUEUE_FILE = "/tmp/claude_code_tips_queue.json"
 LOCK_FILE = "/tmp/claude_code_tips.lock"
+PROCESS_PID_FILE = "/tmp/claude_tips_processor.pid"
 BATCH_WAIT_TIME = config['BATCH_WAIT_TIME']
+IDLE_TIMEOUT = 30  # Exit after 30 seconds of inactivity
+
+# Track if we should continue running
+running = True
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully"""
+    global running
+    running = False
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 def acquire_lock(timeout=5):
     """Acquire a file lock to prevent race conditions"""
@@ -243,19 +258,34 @@ def process_and_speak_tips(tips):
             except:
                 pass
 
-# Main: Continuously poll for messages until one arrives
+def cleanup_and_exit():
+    """Clean up PID file and exit"""
+    try:
+        os.unlink(PROCESS_PID_FILE)
+    except:
+        pass
+    sys.exit(0)
+
+# Main: Continuously monitor queue for new tips
 if __name__ == "__main__":
     # Exit early if audio feedback is disabled
     if not config.get('ENABLE_AUDIO_FEEDBACK', True):
-        sys.exit(0)
+        cleanup_and_exit()
     
-    # Use adaptive polling - start fast, slow down over time
-    start_time = time.time()
-    tips_collected = []
-    last_tip_time = None
+    last_activity_time = time.time()
+    tips_batch = []
+    batch_start_time = None
     
-    # Continuously poll until we get a message and batch time passes
-    while True:
+    # Continuously monitor the queue
+    while running:
+        current_time = time.time()
+        
+        # Check for timeout (exit if idle too long)
+        if current_time - last_activity_time > IDLE_TIMEOUT:
+            if not tips_batch:  # No pending tips
+                cleanup_and_exit()
+        
+        # Check the queue for new tips
         lock = acquire_lock()
         if lock:
             try:
@@ -263,39 +293,34 @@ if __name__ == "__main__":
                 
                 # Check if new tips arrived
                 if queue_data["tips"]:
-                    if not tips_collected:
-                        # First tip arrived, start batch timer
-                        last_tip_time = time.time()
-                    else:
-                        # More tips arrived, update timer
-                        last_tip_time = time.time()
+                    last_activity_time = current_time
                     
-                    # Add new tips to collection
-                    tips_collected.extend(queue_data["tips"])
+                    if not tips_batch:
+                        # First tip in new batch
+                        batch_start_time = current_time
                     
-                    # Clear the queue AFTER collecting tips (prevents race condition)
+                    # Add new tips to batch
+                    tips_batch.extend(queue_data["tips"])
+                    
+                    # Clear the queue
                     queue_data = {"tips": [], "last_update": 0}
                     save_queue(queue_data)
             finally:
                 release_lock(lock)
         
-        # If we have tips and batch time has passed, speak them
-        if tips_collected and last_tip_time:
-            if time.time() - last_tip_time >= BATCH_WAIT_TIME:
-                process_and_speak_tips(tips_collected)
-                break
+        # Process batch if ready
+        if tips_batch and batch_start_time:
+            if current_time - batch_start_time >= BATCH_WAIT_TIME:
+                # Process the batch
+                process_and_speak_tips(tips_batch)
+                
+                # Reset for next batch
+                tips_batch = []
+                batch_start_time = None
+                last_activity_time = current_time
         
-        # Exit if we've been polling for too long (30 seconds timeout)
-        if time.time() - start_time > 30:
-            break
-        
-        # Adaptive polling interval - start fast, slow down over time
-        elapsed = time.time() - start_time
-        if elapsed < 1:
-            poll_interval = 0.1  # First second: 100ms
-        elif elapsed < 5:
-            poll_interval = 0.5  # Next 4 seconds: 500ms  
-        else:
-            poll_interval = 1.0  # After 5 seconds: 1 second
-            
-        time.sleep(poll_interval)
+        # Sleep briefly to avoid busy waiting
+        time.sleep(0.1)
+    
+    # Clean shutdown
+    cleanup_and_exit()

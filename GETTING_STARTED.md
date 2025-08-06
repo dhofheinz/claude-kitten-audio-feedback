@@ -96,10 +96,20 @@ Or if you have existing settings, add the hooks manually:
 
 ```json
 {
-  "PostToolUse.TodoWrite": "$CLAUDE_PROJECT_DIR/.claude/announce_task.py",
-  "PostToolUse.Write": "$CLAUDE_PROJECT_DIR/.claude/review_code.py",
-  "PostToolUse.Edit": "$CLAUDE_PROJECT_DIR/.claude/review_code.py",
-  "PostToolUse.MultiEdit": "$CLAUDE_PROJECT_DIR/.claude/review_code.py"
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/review.py",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -164,7 +174,7 @@ ENABLE_LOGGING=true
 
 2. Check logs:
 ```bash
-tail -f .claude/logs/analyze_*.log
+tail -f .claude/logs/review.log
 ```
 
 3. Verify queue processing:
@@ -192,12 +202,19 @@ Available voices in kitten-tts-nano-0.1:
 
 ### Disable Specific Hooks
 
-Comment out unwanted hooks in `.claude/settings.local.json`:
+Comment out or remove unwanted hooks in `.claude/settings.local.json`:
 
 ```json
 {
-  "PostToolUse.TodoWrite": "$CLAUDE_PROJECT_DIR/.claude/announce_task.py",
-  // "PostToolUse.Write": "...",  // Disabled
+  "hooks": {
+    "PostToolUse": [
+      // Commented out to disable
+      // {
+      //   "matcher": "Write|Edit|MultiEdit",
+      //   "hooks": [...]
+      // }
+    ]
+  }
 }
 ```
 
@@ -209,8 +226,8 @@ In `.env`, change `BATCH_WAIT_TIME` (in seconds):
 
 ## Next Steps
 
-- Customize announcement messages in `announce_task.py`
 - Adjust code review prompts in `.env` file's `REVIEW_PROMPT`
+- Customize the review logic in `.claude/review.py`
 - Add new hooks for other Claude Code events
 - Experiment with different TTS models from KittenML
 
